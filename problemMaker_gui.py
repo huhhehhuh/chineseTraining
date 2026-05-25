@@ -11,11 +11,14 @@ show_answer = False
 waiting_for_next = False
 checkbox_vars = []
 
+
 ctk.set_appearance_mode("dark")
 
 app = ctk.CTk()
 app.geometry("900x700")
 app.title("중국어 학습기")
+
+problem_type = ctk.StringVar(value="hanzi")
 
 selection_label = ctk.CTkLabel(
     app,
@@ -26,6 +29,43 @@ selection_label.pack(pady=(20, 10))
 
 checkbox_frame = ctk.CTkFrame(app)
 checkbox_frame.pack(pady=10)
+
+problem_type_label = ctk.CTkLabel(
+    app,
+    text="문제 형식 선택",
+    font=("Arial", 24)
+)
+problem_type_label.pack(pady=(20, 10))
+
+radio_frame = ctk.CTkFrame(app)
+radio_frame.pack(pady=(0, 20))
+
+hanzi_radio = ctk.CTkRadioButton(
+    radio_frame,
+    text="간화자",
+    variable=problem_type,
+    value="hanzi",
+    font=("Arial", 18)
+)
+hanzi_radio.pack(side="left", padx=20)
+
+pinyin_radio = ctk.CTkRadioButton(
+    radio_frame,
+    text="한어병음",
+    variable=problem_type,
+    value="pinyin",
+    font=("Arial", 18)
+)
+pinyin_radio.pack(side="left", padx=20)
+
+meaning_radio = ctk.CTkRadioButton(
+    radio_frame,
+    text="한글뜻",
+    variable=problem_type,
+    value="meaning",
+    font=("Arial", 18)
+)
+meaning_radio.pack(side="left", padx=20)
 
 for file_name in files:
     var = ctk.BooleanVar(value=True)
@@ -79,10 +119,24 @@ answer_label.pack(pady=20)
 def load_problem():
     word = voca[current_index]
 
-    hanzi_label.configure(text=word[0])
+    current_type = problem_type.get()
+
+    if current_type == "hanzi":
+        problem_text = word[0]
+        answer_text = f"{word[1]}\n{word[2]}"
+
+    elif current_type == "pinyin":
+        problem_text = word[1]
+        answer_text = f"{word[0]}\n{word[2]}"
+
+    else:
+        problem_text = word[2]
+        answer_text = f"{word[0]}\n{word[1]}"
+
+    hanzi_label.configure(text=problem_text)
 
     if show_answer:
-        answer_label.configure(text=f"{word[1]}\n{word[2]}")
+        answer_label.configure(text=answer_text)
     else:
         answer_label.configure(text="")
 
@@ -126,6 +180,21 @@ def next_problem():
 def on_enter(event):
     next_problem()
 
+
+def reset_problems():
+    global current_index
+    global show_answer
+    global waiting_for_next
+    global voca
+
+    voca = []
+    current_index = 0
+    show_answer = False
+    waiting_for_next = False
+
+    answer_label.configure(text="")
+    hanzi_label.configure(text="엔터를 눌러 시작")
+
 button_frame = ctk.CTkFrame(app)
 button_frame.pack(pady=40)
 
@@ -138,6 +207,16 @@ next_button = ctk.CTkButton(
     font=("Arial", 20)
 )
 next_button.pack(side="left", padx=20)
+
+reset_button = ctk.CTkButton(
+    button_frame,
+    text="처음부터",
+    command=reset_problems,
+    width=160,
+    height=50,
+    font=("Arial", 20)
+)
+reset_button.pack(side="left", padx=20)
 
 app.bind("<Return>", on_enter)
 
