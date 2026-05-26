@@ -52,10 +52,52 @@
       font-size: 15px;
     }
 
+    /* 설정 컨테이너 및 토글 버튼 스타일 추가 */
+    .settings-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .settings-toggle {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 999px;
+      cursor: pointer;
+      min-width: unset; /* 전역 button 스타일 덮어쓰기 */
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .settings-toggle:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+
+    /* 설정 패널 본체 (애니메이션 적용) */
     .settings {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
+      width: 100%;
+      overflow: hidden;
+      max-height: 0; /* 기본적으로 접혀있도록 설정 (원하면 600px 등으로 수정) */
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+    }
+
+    /* 펼쳐졌을 때의 클래스 */
+    .settings.open {
+      max-height: 600px; 
+      opacity: 1;
     }
 
     .panel {
@@ -162,7 +204,7 @@
       flex-wrap: wrap;
     }
 
-    button {
+    button:not(.settings-toggle) {
       border: 0;
       cursor: pointer;
       color: #f9fafb;
@@ -174,12 +216,12 @@
       transition: 0.15s ease;
     }
 
-    button:hover {
+    button:not(.settings-toggle):hover {
       transform: translateY(-2px);
       filter: brightness(1.08);
     }
 
-    button:active {
+    button:not(.settings-toggle):active {
       transform: translateY(0);
     }
 
@@ -219,7 +261,7 @@
         grid-template-columns: 1fr;
       }
 
-      button {
+      button:not(.settings-toggle) {
         width: 100%;
       }
 
@@ -234,33 +276,39 @@
   <main class="app">
     <header>
       <h1>중국어 학습기</h1>
-      <p class="subtitle">범위와 문제 유형을 고르고 다음 버튼을 누르면 시작됩니다.</p>
+      <p class="subtitle">설정을 확인하고 엔터나 다음 버튼을 누르면 시작됩니다.</p>
     </header>
 
-    <section class="settings">
-      <div class="panel">
-        <p class="panel-title">시험범위 선택</p>
-        <div class="check-grid" id="lessonChecks"></div>
-      </div>
-
-      <div class="panel">
-        <p class="panel-title">문제 유형 선택</p>
-        <div class="radio-grid">
-          <label class="option">
-            <input type="radio" name="problemType" value="hanzi" checked />
-            간화자
-          </label>
-          <label class="option">
-            <input type="radio" name="problemType" value="pinyin" />
-            한어병음
-          </label>
-          <label class="option">
-            <input type="radio" name="problemType" value="meaning" />
-            한글뜻
-          </label>
+    <div class="settings-container">
+      <button id="settingsToggle" class="settings-toggle">
+        ⚙️ 시험 설정 <span id="toggleIcon">▼</span>
+      </button>
+      
+      <section class="settings" id="settingsPanel">
+        <div class="panel">
+          <p class="panel-title">시험범위 선택</p>
+          <div class="check-grid" id="lessonChecks"></div>
         </div>
-      </div>
-    </section>
+
+        <div class="panel">
+          <p class="panel-title">문제 유형 선택</p>
+          <div class="radio-grid">
+            <label class="option">
+              <input type="radio" name="problemType" value="hanzi" checked />
+              간화자
+            </label>
+            <label class="option">
+              <input type="radio" name="problemType" value="pinyin" />
+              한어병음
+            </label>
+            <label class="option">
+              <input type="radio" name="problemType" value="meaning" />
+              한글뜻
+            </label>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <section class="problem-card">
       <div id="problemText">엔터를 눌러 시작</div>
@@ -299,8 +347,25 @@
     const statusText = document.getElementById("statusText");
     const nextButton = document.getElementById("nextButton");
     const resetButton = document.getElementById("resetButton");
+    
+    // 설정 토글 관련 요소
+    const settingsToggle = document.getElementById("settingsToggle");
+    const settingsPanel = document.getElementById("settingsPanel");
+    const toggleIcon = document.getElementById("toggleIcon");
 
     makeLessonCheckboxes();
+
+    // 토글 버튼 이벤트 리스너 추가
+    settingsToggle.addEventListener("click", () => {
+      settingsPanel.classList.toggle("open");
+      
+      // 상태에 따라 화살표 모양 변경
+      if (settingsPanel.classList.contains("open")) {
+        toggleIcon.textContent = "▲";
+      } else {
+        toggleIcon.textContent = "▼";
+      }
+    });
 
     nextButton.addEventListener("click", nextProblem);
     resetButton.addEventListener("click", resetProblems);
@@ -378,7 +443,6 @@
         .map((line) => line.trim())
         .filter(Boolean);
 
-      // 첫 줄은 Python 코드처럼 헤더라고 보고 건너뜀.
       return lines.slice(1)
         .map((line) => line.split("\t"))
         .filter((row) => row.length >= 3)
@@ -431,7 +495,17 @@
             answerText.textContent = "파일을 하나 이상 선택하세요";
             answerText.className = "error";
             statusText.textContent = "";
+            
+            // 파일 선택 안 된 경우 설정 패널 자동으로 열어주기
+            if (!settingsPanel.classList.contains("open")) {
+              settingsToggle.click();
+            }
             return;
+          }
+
+          // 학습이 시작되면 설정 창을 자동으로 닫아주는 기능 (선택 사항)
+          if (settingsPanel.classList.contains("open")) {
+            settingsToggle.click();
           }
 
           currentIndex = 0;
@@ -479,6 +553,11 @@
       answerText.textContent = "";
       answerText.className = "";
       statusText.textContent = "";
+      
+      // 초기화 시 설정 패널 열기
+      if (!settingsPanel.classList.contains("open")) {
+        settingsToggle.click();
+      }
     }
 
     function shuffle(array) {
