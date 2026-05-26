@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chinese Training 설치 가이드</title>
+  <title>중국어 학습기</title>
+
   <style>
     * {
       box-sizing: border-box;
@@ -11,241 +12,481 @@
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background-color: #f5f7fb;
-      color: #222;
-      line-height: 1.7;
+      min-height: 100vh;
+      font-family: Arial, "Noto Sans KR", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top, #25304a 0, #111827 42%, #09090b 100%);
+      color: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
+    .app {
+      width: min(980px, 100%);
+      min-height: min(720px, 100vh);
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    header {
+      text-align: center;
     }
 
     h1 {
-      font-size: 2.2rem;
-      margin-bottom: 10px;
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.04em;
     }
 
-    h2 {
-      margin-top: 50px;
-      border-left: 5px solid #4f46e5;
-      padding-left: 12px;
-      font-size: 1.5rem;
+    .subtitle {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 15px;
     }
 
-    p {
-      margin: 10px 0;
+    .settings {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
     }
 
-    .intro {
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      margin-top: 25px;
+    .panel {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 22px;
+      padding: 18px;
     }
 
-    .step {
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      margin-top: 20px;
+    .panel-title {
+      margin: 0 0 14px;
+      font-size: 20px;
+      font-weight: 800;
     }
 
-    .platform {
-      margin-top: 18px;
-      padding: 16px;
-      border-radius: 12px;
+    .check-grid,
+    .radio-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
-    .mac {
-      background-color: #eef6ff;
-      border: 1px solid #cfe3ff;
+    label.option {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 17px;
+      transition: 0.15s ease;
     }
 
-    .windows {
-      background-color: #f3f0ff;
-      border: 1px solid #d8ccff;
+    label.option:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateY(-1px);
     }
 
-    code {
-      background: #ececec;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-size: 0.95rem;
+    input {
+      accent-color: #60a5fa;
+      width: 18px;
+      height: 18px;
     }
 
-    a {
-      color: #4f46e5;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    ol, ul {
-      padding-left: 22px;
-    }
-
-    .warning {
-      background: #fff4e5;
-      border: 1px solid #ffd59b;
-      padding: 16px;
-      border-radius: 12px;
-      margin-top: 18px;
-    }
-
-    .footer {
-      margin-top: 60px;
+    .problem-card {
+      flex: 1;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      color: #666;
-      font-size: 0.95rem;
+      border-radius: 30px;
+      padding: 30px 18px;
+      background: linear-gradient(180deg, rgba(96, 165, 250, 0.14), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(147, 197, 253, 0.18);
+    }
+
+    #problemText {
+      width: 100%;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      line-height: 1.15;
+      font-size: clamp(64px, 12vw, 148px);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      text-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    #problemText.meaning-mode {
+      font-size: clamp(44px, 8vw, 92px);
+      line-height: 1.2;
+    }
+
+    #answerText {
+      min-height: 78px;
+      margin-top: 24px;
+      white-space: pre-wrap;
+      font-size: clamp(28px, 4.2vw, 48px);
+      line-height: 1.35;
+      color: #fde68a;
+      font-weight: 800;
+    }
+
+    .status {
+      min-height: 24px;
+      color: #cbd5e1;
+      font-size: 16px;
+      margin-top: 16px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      color: #f9fafb;
+      font-size: 20px;
+      font-weight: 800;
+      border-radius: 18px;
+      padding: 16px 28px;
+      min-width: 180px;
+      transition: 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #nextButton {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+    }
+
+    #resetButton {
+      background: linear-gradient(135deg, #475569, #1f2937);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .help {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .error {
+      color: #fca5a5;
+      font-weight: 800;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 12px;
+      }
+
+      .app {
+        min-height: calc(100vh - 24px);
+        padding: 18px;
+        border-radius: 22px;
+      }
+
+      .settings {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      #problemText {
+        min-height: 130px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Chinese Training 설치 가이드</h1>
+  <main class="app">
+    <header>
+      <h1>중국어 학습기</h1>
+      <p class="subtitle">범위와 문제 유형을 고르고 다음 버튼을 누르면 시작됩니다.</p>
+    </header>
 
-    <div class="intro">
-      <p>
-        이 프로그램은 Python으로 만들어진 중국어 단어 학습 프로그램입니다.
-      </p>
-      <p>
-        아래 순서대로 설치하면 정상적으로 실행할 수 있습니다.
-      </p>
-    </div>
-
-    <h2>1. Python 설치</h2>
-
-    <div class="step">
-      <p>
-        먼저 Python이 설치되어 있어야 합니다.
-      </p>
-
-      <p>
-        공식 사이트:
-        <a href="https://www.python.org/downloads/" target="_blank">
-          https://www.python.org/downloads/
-        </a>
-      </p>
-
-      <div class="platform windows">
-        <h3>Windows</h3>
-        <ol>
-          <li>위 사이트에서 Python 설치 파일 다운로드</li>
-          <li>설치 실행</li>
-          <li><strong>"Add Python to PATH" 체크 후 설치</strong></li>
-        </ol>
+    <section class="settings">
+      <div class="panel">
+        <p class="panel-title">시험범위 선택</p>
+        <div class="check-grid" id="lessonChecks"></div>
       </div>
 
-      <div class="platform mac">
-        <h3>Mac</h3>
-        <ol>
-          <li>위 사이트에서 macOS용 Python 다운로드</li>
-          <li>설치 파일 실행 후 설치 진행</li>
-          <li>설치 후 터미널에서 아래 명령어 입력</li>
-        </ol>
-
-        <p><code>python3 --version</code></p>
-
-        <p>
-          버전이 출력되면 정상 설치된 것입니다.
-        </p>
+      <div class="panel">
+        <p class="panel-title">문제 유형 선택</p>
+        <div class="radio-grid">
+          <label class="option">
+            <input type="radio" name="problemType" value="hanzi" checked />
+            간화자
+          </label>
+          <label class="option">
+            <input type="radio" name="problemType" value="pinyin" />
+            한어병음
+          </label>
+          <label class="option">
+            <input type="radio" name="problemType" value="meaning" />
+            한글뜻
+          </label>
+        </div>
       </div>
+    </section>
+
+    <section class="problem-card">
+      <div id="problemText">엔터를 눌러 시작</div>
+      <div id="answerText"></div>
+      <div class="status" id="statusText"></div>
+    </section>
+
+    <section class="buttons">
+      <button id="nextButton" type="button">엔터 / 스페이스 / 다음</button>
+      <button id="resetButton" type="button">/ / 처음부터</button>
+    </section>
+
+    <div class="help">
+      노트북 키보드: <b>Enter</b> 또는 <b>Space</b> = 다음 / 정답 보기,
+      <b>/</b> = 시험 초기화
     </div>
+  </main>
 
-    <h2>2. GitHub에서 파일 다운로드</h2>
+  <script>
+    const lessonFiles = [
+      "vocabulary/lesson1.tsv",
+      "vocabulary/lesson2.tsv",
+      "vocabulary/lesson3.tsv",
+      "vocabulary/lesson4.tsv",
+      "vocabulary/lesson5.tsv",
+    ];
 
-    <div class="step">
-      <p>
-        GitHub 저장소:
-        <a href="https://github.com/huhhehhuh/chineseTraining" target="_blank">
-          chineseTraining
-        </a>
-      </p>
+    let voca = [];
+    let currentIndex = 0;
+    let showAnswer = false;
+    let waitingForNext = false;
 
-      <ol>
-        <li>위 링크 접속</li>
-        <li>초록색 <code>Code</code> 버튼 클릭</li>
-        <li><code>Download ZIP</code> 클릭</li>
-        <li>다운로드된 ZIP 파일 압축 해제</li>
-      </ol>
-    </div>
+    const lessonChecks = document.getElementById("lessonChecks");
+    const problemText = document.getElementById("problemText");
+    const answerText = document.getElementById("answerText");
+    const statusText = document.getElementById("statusText");
+    const nextButton = document.getElementById("nextButton");
+    const resetButton = document.getElementById("resetButton");
 
-    <h2>3. customtkinter 설치</h2>
+    makeLessonCheckboxes();
 
-    <div class="step">
-      <p>
-        프로그램 실행에 필요한 라이브러리인 <code>customtkinter</code>를 설치해야 합니다.
-      </p>
+    nextButton.addEventListener("click", nextProblem);
+    resetButton.addEventListener("click", resetProblems);
 
-      <div class="platform windows">
-        <h3>Windows</h3>
-        <p>압축 해제한 폴더 위치에서 터미널 또는 CMD 실행 후:</p>
-        <p><code>pip install customtkinter</code></p>
-      </div>
+    document.querySelectorAll("input[name='problemType']").forEach((radio) => {
+      radio.addEventListener("change", () => {
+        if (voca.length > 0) {
+          loadProblem();
+        }
+      });
+    });
 
-      <div class="platform mac">
-        <h3>Mac</h3>
-        <p>터미널 실행 후:</p>
-        <p><code>pip3 install customtkinter</code></p>
-      </div>
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        nextProblem();
+      }
 
-      <div class="warning">
-        <strong>주의:</strong><br />
-        Mac에서는 보통 <code>pip</code> 대신 <code>pip3</code>를 사용해야 합니다.
-      </div>
-    </div>
+      if (event.key === "/") {
+        event.preventDefault();
+        resetProblems();
+      }
+    });
 
-    <h2>4. 프로그램 실행</h2>
+    function makeLessonCheckboxes() {
+      lessonFiles.forEach((fileName, index) => {
+        const label = document.createElement("label");
+        label.className = "option";
 
-    <div class="step">
-      <p>
-        다운로드한 폴더 안에서 problemMaker_gui.py 파일을 실행하면 됩니다.
-      </p>
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = fileName;
+        checkbox.checked = true;
 
-      <div class="platform windows">
-        <h3>Windows</h3>
-        <ol>
-          <li>압축 해제한 폴더 열기</li>
-          <li>실행할 Python 파일 확인</li>
-          <li>터미널에서 아래 명령어 실행</li>
-        </ol>
+        const text = document.createElement("span");
+        text.textContent = `${index + 1}과`;
 
-        <p><code>python problemMaker_gui.py</code></p>
-      </div>
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        lessonChecks.appendChild(label);
+      });
+    }
 
-      <div class="platform mac">
-        <h3>Mac</h3>
-        <ol>
-          <li>터미널 열기</li>
-          <li>프로그램 폴더로 이동</li>
-          <li>아래 명령어 실행</li>
-        </ol>
+    async function loadSelectedFiles() {
+      voca = [];
 
-        <p><code>python3 problemMaker_gui.py</code></p>
-      </div>
-    </div>
+      const checkedFiles = [...lessonChecks.querySelectorAll("input:checked")]
+        .map((checkbox) => checkbox.value);
 
-    <h2>문제가 발생한다면</h2>
+      if (checkedFiles.length === 0) {
+        return;
+      }
 
-    <div class="step">
-      <ul>
-        <li><code>python</code> 명령어가 안 되면 Python이 제대로 설치되지 않았을 수 있습니다.</li>
-        <li><code>ModuleNotFoundError</code>가 뜨면 customtkinter 설치를 다시 진행하세요.</li>
-        <li>Mac에서는 대부분 <code>python3</code>, <code>pip3</code>를 사용해야 합니다.</li>
-      </ul>
-    </div>
+      const loadedLists = await Promise.all(
+        checkedFiles.map(async (fileName) => {
+          const response = await fetch(fileName);
 
-    <div class="footer">
-      제작 및 문의 : 이성빈
-    </div>
-  </div>
+          if (!response.ok) {
+            throw new Error(`${fileName} 파일을 불러오지 못했습니다.`);
+          }
+
+          const text = await response.text();
+          return parseTsv(text);
+        })
+      );
+
+      voca = loadedLists.flat();
+      shuffle(voca);
+    }
+
+    function parseTsv(text) {
+      const lines = text
+        .replace(/\r/g, "")
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      // 첫 줄은 Python 코드처럼 헤더라고 보고 건너뜀.
+      return lines.slice(1)
+        .map((line) => line.split("\t"))
+        .filter((row) => row.length >= 3)
+        .map((row) => ({
+          hanzi: row[0].trim(),
+          pinyin: row[1].trim(),
+          meaning: row[2].trim(),
+        }));
+    }
+
+    function getProblemType() {
+      return document.querySelector("input[name='problemType']:checked").value;
+    }
+
+    function loadProblem() {
+      if (voca.length === 0) return;
+
+      const word = voca[currentIndex];
+      const currentType = getProblemType();
+
+      let question = "";
+      let answer = "";
+
+      if (currentType === "hanzi") {
+        question = word.hanzi;
+        answer = `${word.pinyin}\n${word.meaning}`;
+      } else if (currentType === "pinyin") {
+        question = word.pinyin;
+        answer = `${word.hanzi}\n${word.meaning}`;
+      } else {
+        question = word.meaning;
+        answer = `${word.hanzi}\n${word.pinyin}`;
+      }
+
+      problemText.textContent = question;
+      problemText.classList.toggle("meaning-mode", currentType === "meaning");
+      answerText.textContent = showAnswer ? answer : "";
+      statusText.textContent = `${currentIndex + 1} / ${voca.length}`;
+      statusText.className = "status";
+    }
+
+    async function nextProblem() {
+      try {
+        if (voca.length === 0) {
+          await loadSelectedFiles();
+
+          if (voca.length === 0) {
+            problemText.textContent = "범위 선택 필요";
+            problemText.classList.add("meaning-mode");
+            answerText.textContent = "파일을 하나 이상 선택하세요";
+            answerText.className = "error";
+            statusText.textContent = "";
+            return;
+          }
+
+          currentIndex = 0;
+          showAnswer = false;
+          waitingForNext = false;
+          answerText.className = "";
+          loadProblem();
+          return;
+        }
+
+        if (!waitingForNext) {
+          showAnswer = true;
+          waitingForNext = true;
+          loadProblem();
+          return;
+        }
+
+        currentIndex += 1;
+
+        if (currentIndex >= voca.length) {
+          shuffle(voca);
+          currentIndex = 0;
+        }
+
+        showAnswer = false;
+        waitingForNext = false;
+        loadProblem();
+      } catch (error) {
+        problemText.textContent = "로드 실패";
+        problemText.classList.add("meaning-mode");
+        answerText.textContent = error.message;
+        answerText.className = "error";
+        statusText.textContent = "로컬에서 바로 열었다면, 아래 설명처럼 서버로 실행해야 합니다.";
+      }
+    }
+
+    function resetProblems() {
+      voca = [];
+      currentIndex = 0;
+      showAnswer = false;
+      waitingForNext = false;
+
+      problemText.textContent = "엔터를 눌러 시작";
+      problemText.classList.remove("meaning-mode");
+      answerText.textContent = "";
+      answerText.className = "";
+      statusText.textContent = "";
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+        [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
+      }
+    }
+  </script>
 </body>
 </html>
