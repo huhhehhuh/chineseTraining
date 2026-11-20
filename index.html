@@ -332,10 +332,9 @@
   <script>
     const lessonFiles = [
       "vocabulary/lesson1.tsv",
-      "vocabulary/lesson2.tsv",
       "vocabulary/lesson3.tsv",
       "vocabulary/lesson4.tsv",
-      "vocabulary/lesson5.tsv",
+      "vocabulary/lesson6.tsv",
     ];
 
     let voca = [];
@@ -403,7 +402,7 @@
         checkbox.checked = true;
 
         const text = document.createElement("span");
-        text.textContent = `${index + 1}과`;
+        text.textContent = `${fileName.match(/lesson(\d+)/)[1]}과`;
 
         label.appendChild(checkbox);
         label.appendChild(text);
